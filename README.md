@@ -2,7 +2,7 @@
 
 This is a simple example to show you how Apache Camel works with Spring Boot.
 
-# Libraqries and Tools
+# Libraries and Tools
 * [Module] `Spring Boot`
 * [Module] `Apache Camel`
 
