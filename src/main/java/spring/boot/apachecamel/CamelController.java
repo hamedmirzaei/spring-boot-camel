@@ -11,9 +11,9 @@ public class CamelController {
     @Autowired
     ProducerTemplate producerTemplate;
 
-    @RequestMapping(value = "/")
-    private void startCamelEndpoint() {
-        producerTemplate.sendBody("direct:firstCamelRoute", "Calling via Spring Boot Rest Controller");
+    @RequestMapping(value = "/first")
+    private void startFirstCamelRoute() {
+        producerTemplate.sendBody("direct:firstCamelRoute", "Calling First Route via Spring Boot Rest Controller");
     }
 
 }
