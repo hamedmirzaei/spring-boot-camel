@@ -3,8 +3,8 @@
 This is a simple example to show you how Apache Camel works with Spring Boot.
 
 # Libraries and Tools
-* [Module] `Spring Boot`
-* [Module] `Apache Camel`
+* [Module] [`Spring Boot`](https://spring.io/projects/spring-boot)
+* [Module] [`Apache Camel`](https://camel.apache.org/)
 
 # How it works
 It is just a maven Spring Boot application which you can build and run it like any other Spring Boot application. 
