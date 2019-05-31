@@ -1,6 +1,6 @@
 # Spring Boot + Apache Camel
 
-This is a simple example to show you how Apache Camel works with Spring Boot.
+This is a series of examples to show you how Apache Camel works.
 
 # Libraries and Tools
 * [Module] [`Spring Boot`](https://spring.io/projects/spring-boot)
