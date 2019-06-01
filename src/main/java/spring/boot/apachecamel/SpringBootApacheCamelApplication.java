@@ -72,15 +72,15 @@ public class SpringBootApacheCamelApplication extends RouteBuilder {
 
         from("direct:change-status-to-c")
                 .log("Here in change-status-to-c")
-                .to("sql:select * from tbluser where id <= 2")
+                .to("sql:select * from tbl_user where id <= 2")
                 .split(body()).streaming()
-                .to("sql:update tbluser set status = 'IN-C' where id = :#${body[id]}");
+                .to("sql:update tbl_user set status = 'IN-C' where id = :#${body[id]}");
 
         from("direct:change-status-to-d")
                 .log("Here in change-status-to-d")
-                .to("sql:select * from tbluser where id > 2")
+                .to("sql:select * from tbl_user where id > 2")
                 .split(body()).streaming()
-                .to("sql:update tbluser set status = 'IN-D' where id = :#${body[id]}");
+                .to("sql:update tbl_user set status = 'IN-D' where id = :#${body[id]}");
     }
 
     @Bean ("transactionManager")

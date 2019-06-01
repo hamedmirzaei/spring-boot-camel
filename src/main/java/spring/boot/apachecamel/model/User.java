@@ -3,7 +3,7 @@ package spring.boot.apachecamel.model;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "tbluser")
+@Table(name = "tbl_user")
 public class User {
 
     @Id
