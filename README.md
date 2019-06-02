@@ -18,3 +18,6 @@ the transactions and all the records remains unchanged to `NEW`.
 * Go to [`http://localhost:8080/log`](http://localhost:8080/log) to log the users on the console and
 verify the rollback mechanism.
 
+* These is a lot of other test which have been provided as main classes. You can start them simply as java 
+applications. For example  `CamelInMemorySagaExample` is a sample that shows how `Saga` EIP works.
+
