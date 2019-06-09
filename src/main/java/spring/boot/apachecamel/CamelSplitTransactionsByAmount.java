@@ -18,10 +18,10 @@ public class CamelSplitTransactionsByAmount {
                             .streaming()
                             .process(new XmlToObjectProcessor<Transaction>(Transaction.class))
                             .choice()
-                            .when(e -> e.getIn().getBody(Transaction.class).getTransfer().getAmount() > 100)
-                            .to("direct:txbig")
-                            .otherwise()
-                            .to("direct:txsmall")
+                                .when(e -> e.getIn().getBody(Transaction.class).getTransfer().getAmount() > 100)
+                                    .to("direct:txbig")
+                                .otherwise()
+                                    .to("direct:txsmall")
                             .endChoice()
                             .end();
 
