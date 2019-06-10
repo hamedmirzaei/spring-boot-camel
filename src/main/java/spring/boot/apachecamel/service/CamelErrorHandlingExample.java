@@ -8,6 +8,8 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.impl.DefaultCamelContext;
 
+import java.util.Random;
+
 @Slf4j
 public class CamelErrorHandlingExample {
     public static final void main(String[] args) throws Exception {
@@ -16,19 +18,17 @@ public class CamelErrorHandlingExample {
             camelContext.addRoutes(new RouteBuilder() {
                 public void configure() {
 
-
                     from("direct:error").process(new Processor() {
                         @Override
                         public void process(Exchange exchange) throws Exception {
-                            //exchange.getIn().setHeader("random", new Random(System.currentTimeMillis()).nextInt(100));
-                            exchange.getIn().setHeader("random", 70);
+                            exchange.getIn().setHeader("random", new Random(System.currentTimeMillis()).nextInt(100));
                         }
                     });
                 }
             });
             ProducerTemplate template = camelContext.createProducerTemplate();
             camelContext.start();
-            template.sendBody("direct:exception", "This is an exception example");
+            template.sendBody("direct:error", "This is an error example");
         } finally {
             camelContext.stop();
         }
