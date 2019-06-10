@@ -2,10 +2,7 @@ package spring.boot.apachecamel;
 
 import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.implementation.bytecode.Throw;
-import org.apache.camel.CamelContext;
-import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
-import org.apache.camel.ProducerTemplate;
+import org.apache.camel.*;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.processor.aggregate.GroupedExchangeAggregationStrategy;
@@ -24,6 +21,21 @@ public class CamelExceptionHandlingExample {
             camelContext.addRoutes(new RouteBuilder() {
                 public void configure() {
 
+                    onException(SecurityException.class)
+                            .handled(true)
+                            //.transform(exceptionMessage()) // returns the exception message to consumer instead of propagating exception
+                            .transform() // or you can return custom response to consumer
+                            .simple("Error reported: ${exception.message} - cannot process this message.")
+                            .process(new Processor() {
+                                @Override
+                                public void process(Exchange exchange) throws Exception {
+                                    log.info("$$$$$$$$$$$$$$$$$$$$$$$$$$ " + exchange.getIn().getBody());
+                                }
+                            });
+
+                    onException(NullPointerException.class)
+                            .continued(true); // in case of NullPointerException, just skip and continue
+
                     onException(IllegalStateException.class, ArithmeticException.class)
                             .useOriginalMessage() // this gives the original exchange
                             .process(new Processor() {
@@ -34,9 +46,10 @@ public class CamelExceptionHandlingExample {
                                 }
                             })
                             .log("########################## IllegalStateException|ArithmeticException: ${body}")
-                            .handled(true);
+                            .handled(true); // do not rethrow or propagate back
 
                     onException(IllegalArgumentException.class)
+                            .maximumRedeliveries(2) // redelivery times, the following code will be executed only after the last delivery
                             .process(new Processor() {
                                 @Override
                                 public void process(Exchange exchange) throws Exception {
@@ -51,12 +64,16 @@ public class CamelExceptionHandlingExample {
                     from("direct:exception").process(new Processor() {
                         @Override
                         public void process(Exchange exchange) throws Exception {
-                            exchange.getIn().setHeader("random", new Random(System.currentTimeMillis()).nextInt(100));
+                            //exchange.getIn().setHeader("random", new Random(System.currentTimeMillis()).nextInt(100));
+                            exchange.getIn().setHeader("random", 70);
                         }
-                    }).process(new Processor() {
+                    })
+                    .log("@@@@@@@@@@@@@@@@@@@@@@@@@@ random is = ${header[random]}")
+                    .process(new Processor() {
                         @Override
                         public void process(Exchange exchange) throws Exception {
-                            if (Integer.parseInt(exchange.getIn().getHeader("random").toString()) < 30) {
+                            if (Integer.parseInt(exchange.getIn().getHeader("random").toString()) >= 0 &&
+                                    Integer.parseInt(exchange.getIn().getHeader("random").toString()) < 25) {
                                 exchange.getIn().setBody("Here is an IllegalStateException");
                                 throw new IllegalStateException("Here is an IllegalStateException");
                             }
@@ -64,7 +81,8 @@ public class CamelExceptionHandlingExample {
                     }).process(new Processor() {
                         @Override
                         public void process(Exchange exchange) throws Exception {
-                            if (Integer.parseInt(exchange.getIn().getHeader("random").toString()) < 60) {
+                            if (Integer.parseInt(exchange.getIn().getHeader("random").toString()) >= 25 &&
+                                    Integer.parseInt(exchange.getIn().getHeader("random").toString()) < 50) {
                                 exchange.getIn().setBody("Here is an IllegalArgumentException");
                                 throw new IllegalArgumentException("Here is an IllegalArgumentException");
                             }
@@ -72,12 +90,34 @@ public class CamelExceptionHandlingExample {
                     }).process(new Processor() {
                         @Override
                         public void process(Exchange exchange) throws Exception {
-                            if (Integer.parseInt(exchange.getIn().getHeader("random").toString()) <= 100) {
+                            if (Integer.parseInt(exchange.getIn().getHeader("random").toString()) >= 50 &&
+                                    Integer.parseInt(exchange.getIn().getHeader("random").toString()) < 65) {
+                                exchange.getIn().setBody("Here is an NullPointerException");
+                                throw new NullPointerException("Here is an NullPointerException");
+                            }
+                        }
+                    }).process(new Processor() {
+                        @Override
+                        public void process(Exchange exchange) throws Exception {
+                            if (Integer.parseInt(exchange.getIn().getHeader("random").toString()) >= 65 &&
+                                    Integer.parseInt(exchange.getIn().getHeader("random").toString()) < 75) {
+                                exchange.getIn().setBody("Here is an SecurityException");
+                                throw new SecurityException("Here is an SecurityException");
+                            }
+                        }
+                    }).process(new Processor() {
+                        @Override
+                        public void process(Exchange exchange) throws Exception {
+                            if (Integer.parseInt(exchange.getIn().getHeader("random").toString()) >= 75 &&
+                                    Integer.parseInt(exchange.getIn().getHeader("random").toString()) < 100) {
                                 exchange.getIn().setBody("Here is an ArithmeticException");
                                 throw new ArithmeticException("Here is an ArithmeticException");
                             }
                         }
-                    }).end();
+                    })
+                    .log("@@@@@@@@@@@@@@@@@@@@@@@@@@ End body: ${body}")
+                    .log("@@@@@@@@@@@@@@@@@@@@@@@@@@ End of route")
+                    .end();
                 }
             });
             ProducerTemplate template = camelContext.createProducerTemplate();
