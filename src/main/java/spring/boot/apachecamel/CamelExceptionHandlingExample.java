@@ -64,8 +64,8 @@ public class CamelExceptionHandlingExample {
                     from("direct:exception").process(new Processor() {
                         @Override
                         public void process(Exchange exchange) throws Exception {
-                            //exchange.getIn().setHeader("random", new Random(System.currentTimeMillis()).nextInt(100));
-                            exchange.getIn().setHeader("random", 70);
+                            exchange.getIn().setHeader("random", new Random(System.currentTimeMillis()).nextInt(100));
+                            //exchange.getIn().setHeader("random", 70);
                         }
                     })
                     .log("@@@@@@@@@@@@@@@@@@@@@@@@@@ random is = ${header[random]}")
