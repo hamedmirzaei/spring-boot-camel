@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>spring.boot.apachecamel</groupId>
-    <artifactId>spring_boot_apachecamel</artifactId>
+    <artifactId>spring-boot-camel</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>spring_boot_apachecamel</name>
+    <name>spring-boot-camel</name>
     <description>Demo project for Spring Boot + Apache Camel</description>
 
     <properties>
